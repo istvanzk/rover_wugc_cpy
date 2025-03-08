@@ -1,0 +1,73 @@
+#####
+# WiFi parameters
+#####
+#CIRCUITPY_WIFI_SSID = "guest wifi"
+#CIRCUITPY_WIFI_PASSWORD = "guessable"
+#CIRCUITPY_WEB_API_PORT = 80
+#CIRCUITPY_WEB_API_PASSWORD = "passw0rd"
+
+#####
+# M.A.R.S. Rover configuration parameters
+#####
+
+# Driving mode: "simple" or "ackermann"
+# Used in lib/drivefunc.py
+ROVER_STEERING_MODE = "simple" 
+
+# Accessories to be enabled (0=False/No, 1=True/Yes)
+# Corresponding GPIOs for SONAR, IRSENSORS and KEYPAD are configured below.
+# Used in lib/rover_cpy.py
+USE_MAST_PAN  = 1
+USE_MAST_TILT = 1
+USE_SONAR     = 0
+USE_IRSENSORS = 0
+USE_KEYPAD    = 0
+
+# Servos indeces (PCA9685 ports)
+# Used in lib/rover_cpy.py
+SERVO_FL = 9
+SERVO_RL = 11
+SERVO_FR = 15
+SERVO_RR = 13
+SERVO_MP = 7
+SERVO_MT = 6
+
+# Mandatory GPIO pins (board.GPx) 
+# when using the Challenger+ RP2350 WiFi6/BLE5
+# https://ilabs.se/product/challenger-rp2350-wifi-ble/ development board.
+# Used in lib/rover_cpy.py
+#
+# PWM GPIO pins used to control the Left/Right DC motors (via DRV8833)
+PWML1_GPIO = 2
+PWML2_GPIO = 24
+PWMR1_GPIO = 3
+PWMR2_GPIO = 25
+
+# Define RGB LEDs GPIO
+LED_GPIO = 7
+
+
+# Optional 4 GPIO pins (board.GPx) for additional devices
+# when using the Challenger+ RP2350 WiFi6/BLE5
+# https://ilabs.se/product/challenger-rp2350-wifi-ble/ development board.
+# Used in lib/rover_cpy.py
+# These 4 GPIOs are routed on the M.A.R.S. Rover main board to IO #05, #23, #24, #25.
+# Note that not all these 3 devices can be used simultaneously with these 4 GPIOs.
+# The 3 devices are enabled/disabled by setting the USE_* parameters above.
+#
+# Define ultrasonic sonar Pin (same pin for both Ping and Echo)
+SONAR_GPIO = 26
+
+# Define IR Sensors Pins
+IRFL_GPIO = 26
+IRFR_GPIO = 27
+IRLL_GPIO = 28
+IRLR_GPIO = 29
+
+# Define Keypad Pins
+KEYPADIN_GPIO = 28
+KEYPADOUT_GPIO = 29
+
+#####
+# Other parameters
+#####
