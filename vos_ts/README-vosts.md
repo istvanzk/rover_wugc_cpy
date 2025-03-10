@@ -26,10 +26,11 @@ The code will run automatically after (soft) reboot and initiate the virtual OS 
 
 * `clear`: clear terminal
 * `help`: display help with these commands
-* `versions`: display implementation version of this vOS shell, and of the custom rover related modules [rover_cpy](../lib/rover_cpy.py), [drivefunc](../lib/drivefunc.py) and [pihutwugc](../lib/pihutwugc.py)
 * `exit`: exit vOS shell
 * `reboot`: exit and reset the microcontroller (reboot)
 * `memuse`: diplay memory usage
+* `versions`: display implementation version of this vOS shell, and of the custom rover related modules [rover_cpy](../lib/rover_cpy.py), [drivefunc](../lib/drivefunc.py) and [pihutwugc](../lib/pihutwugc.py)
+* `env`: display environment variables defined in settings.toml 
 * `motor`: run [motorTest.py](../testscripts/motorTest.py)
 * `servo`: run [servoTest.py](../testscripts/servoTest.py)
 * `calib`: run [calibrateServos.py](../testscripts/calibrateServos.py)
