@@ -15,7 +15,7 @@ import sys
 from os import listdir, getenv
 import gc
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 def shell():
     """ The virtual shel script. """

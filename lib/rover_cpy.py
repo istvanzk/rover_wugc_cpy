@@ -46,7 +46,7 @@ from adafruit_hcsr04 import HCSR04
 # https://docs.circuitpython.org/projects/neopixel/en/stable/
 import neopixel
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 ###################### Parameters START ####################
 # All values are read from the settings.toml if they exist.
