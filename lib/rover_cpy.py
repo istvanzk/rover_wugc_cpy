@@ -80,23 +80,41 @@ LED_Pin = eval("board.GP"+getenv('LED_GPIO', '7'))
 
 # Optional pin definitions for devices controlled via 4 GPIO pins
 # when using the Challenger+ RP2350 WiFi6/BLE5
-# https://ilabs.se/product/challenger-rp2350-wifi-ble/ development board.
-# These 4 GPIOs are routed on the M.A.R.S. Rover main board to IO #05, #23, #24, #25.
+# https://ilabs.se/product/challenger-rp2350-wifi-ble/ development board: GPIO26, GPIO27, GPIO28 and GPIO29
+# These 4 GPIOs are routed on the M.A.R.S. Rover main board to the IO marked with #23, #24, #25 and #05, respectively.
 # Note that not all these 3 devices can be used simultaneously with these 4 GPIOs.
 # The 3 devices are enabled/disabled by setting the USE_* parameters above.
 
 # Define ultrasonic sonar Pin (same pin for both Ping and Echo)
-SONAR_Pin = eval("board.GP"+getenv('SONAR_GPIO', '26'))
+SONAR_Pin = None
+if USE_SONAR:
+    SONAR_Pin = eval("board.GP"+getenv('SONAR_GPIO')) # GP26
 
 # Define IR Sensors Pins
-IRFL_Pin = eval("board.GP"+getenv('IRFL_GPIO', '26'))
-IRFR_Pin = eval("board.GP"+getenv('IRFR_GPIO', '27'))
-IRLL_Pin = eval("board.GP"+getenv('IRLL_GPIO', '28'))
-IRLR_Pin = eval("board.GP"+getenv('IRLR_GPIO', '29'))
+IRFL_Pin = None
+IRFR_Pin = None
+IRLL_Pin = None
+IRLR_Pin = None
+if USE_IRSENSORS:
+    IRFL_Pin = eval("board.GP"+getenv('IRFL_GPIO')) # GP26
+    IRFR_Pin = eval("board.GP"+getenv('IRFR_GPIO')) # GP27
+    IRLL_Pin = eval("board.GP"+getenv('IRLL_GPIO')) # GP28
+    IRLR_Pin = eval("board.GP"+getenv('IRLR_GPIO')) # GP29
+
 
 # Define Keypad Pins
-KEYPADIn_Pin  = eval("board.GP"+getenv('KEYPADIN_GPIO', '28'))
-KEYPADOut_Pin = eval("board.GP"+getenv('KEYPADOUT_GPIO', '29'))
+KEYPADIn_Pin  = None
+KEYPADOut_Pin = None
+if USE_KEYPAD:
+    KEYPADIn_Pin  = eval("board.GP"+getenv('KEYPADIN_GPIO'))  # GP28
+    KEYPADOut_Pin = eval("board.GP"+getenv('KEYPADOUT_GPIO')) # GP29
+
+if SONAR_Pin is None:
+    USE_SONAR = False
+if IRFL_Pin is None or IRFR_Pin is None or IRLL_Pin is None or IRLR_Pin is None:
+    USE_IRSENSORS = False
+if KEYPADIn_Pin is None or KEYPADOut_Pin is None:
+    USE_KEYPAD = False
 
 ###################### Parameters END ######################
 

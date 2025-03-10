@@ -56,17 +56,17 @@ LED_GPIO = 7
 # The 3 devices are enabled/disabled by setting the USE_* parameters above.
 #
 # Define ultrasonic sonar Pin (same pin for both Ping and Echo)
-SONAR_GPIO = 26
+#SONAR_GPIO = 26
 
 # Define IR Sensors Pins
-IRFL_GPIO = 26
-IRFR_GPIO = 27
-IRLL_GPIO = 28
-IRLR_GPIO = 29
+#IRFL_GPIO = 26
+#IRFR_GPIO = 27
+#IRLL_GPIO = 28
+#IRLR_GPIO = 29
 
 # Define Keypad Pins
-KEYPADIN_GPIO = 28
-KEYPADOUT_GPIO = 29
+#KEYPADIN_GPIO = 28
+#KEYPADOUT_GPIO = 29
 
 #####
 # Other parameters

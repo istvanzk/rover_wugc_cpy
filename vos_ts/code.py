@@ -12,7 +12,7 @@
 #import time
 import microcontroller
 import sys
-import os
+from os import listdir, getenv
 import gc
 
 VERSION = "1.0.0"
@@ -56,12 +56,12 @@ def clear_screen():
 def run(script_name):
     """ Function to execute an available Python script. """
     try:
-        if script_name.endswith('.py') and script_name in os.listdir("./testscripts"):
+        if script_name.endswith('.py') and script_name in listdir("./testscripts"):
             with open(f"./testscripts/{script_name}") as f:
                 exec(f.read(), {})
 
         else:
-            print(f"Error: {script_name} not found or invalid file type. Found {os.listdir("./testscripts")}")
+            print(f"Error: {script_name} not found or invalid file type. Found {listdir("./testscripts")}")
     except Exception as e:
         print(f"Error running {script_name}: {e}")
 
@@ -109,15 +109,89 @@ def show_versions():
     except ImportError as e:
         print(f"Error importing pihutwugc library: {e}")
 
+def show_envs():
+    """ Display the environment variables defined in settings.toml """
+    # ANSI color codes for 256-color mode
+    # https://talyian.github.io/ansicolors/
+    RED_FG = "\33[38;2;255;0;0m"
+    #YELLOW_FG = "\33[38;2;255;255;0m"
+    GREEN_FG = "\33[38;2;0;255;0m"
+    BLUE_FG = "\33[38;2;0;0;255m"
+    #WHITE_FG = "\33[38;2;255;255;255m"
+    
+    RST = "\33[0m]"
+
+    # The env parameters and their default values
+    _env_bool = {'USE_MAST_PAN': '0', 'USE_MAST_TILT': '0', 'USE_SONAR': '0', 'USE_IRSENSORS': '0', 'USE_KEYPAD': '0'}
+    _env_str  = {'ROVER_STEERING_MODE': 'simple'}
+    _env_indx = {'SERVO_FL' : '9', 'SERVO_FR': '11', 'SERVO_RL': '15', 'SERVO_RR': '13', 'SERVO_MP': '7', 'SERVO_MT': '6'}
+    _env_pwm  = {'PWML1_GPIO': '2', 'PWML2_GPIO': '24', 'PWML1_GPIO': '3', 'PWML2_GPIO': '25', 'LED_GPIO': '7'}
+    _env_gpio = {'SONAR_GPIO': 'None', 'IRFL_GPIO': 'None', 'IRFR_GPIO': 'None', 'IRLL_GPIO': 'None', 'IRLR_GPIO': 'None', 'KEYPADIN_GPIO': 'None', 'KEYPADOUT_GPIO': 'None'}
+
+
+    def print_env(env_str, def_val):
+        """ Print env variable value: set (green) or default (red). """
+        _v  = getenv(env_str)
+        if _v:
+            _fg = GREEN_FG
+        else:
+            _fg = RED_FG
+            _v = def_val      
+        print(f"  {env_str} = {_fg}{_v}{RST}")
+
+    def print_env_bool(env_str, def_val):
+        """ Print boolean env variable value: set 1 (green), set 0 (blue) or default (red). """
+        _v  = getenv(env_str)
+        if _v == '1':
+            _fg = GREEN_FG
+        elif _v == '0':
+            _fg = BLUE_FG
+        else:
+            _fg = RED_FG
+            _v = def_val      
+        print(f"  {env_str} = {_fg}{_v}{RST}")
+
+    # Reset the colors
+    print(RST)
+
+    # Display env variables and their values (set or default)
+    print("# Used in drivefunc.py")
+    print("## Steering mode\n(set=green, default=red):")
+    for _env, _def_val in _env_str.items():
+        print_env(_env, _def_val)
+
+    print()
+    print("# Used in rover_cpy.py")
+    print("## Define accessories to be enabled\n(Yes=green, No=blue, default=red):")
+    for _env, _def_v in _env_bool.items():
+        print_env_bool(_env, _def_val)
+
+    print()
+    print("## Define the servo indeces\n(set=green, default=red):")
+    for _env, _def_val in _env_indx.items():
+        print_env(_env, _def_val)
+
+    print()
+    print("## Mandatory 4 PWM GPIO pins used to control\nthe Left&Right DC motors and the RGB LED strip\n(set=green, default=red):")
+    for _env, _def_val in _env_pwm.items():
+        print_env(_env, _def_val)
+
+    print()
+    print("## Optional 4 GPIO pins\n(set=green, default=red):")
+    for _env, _def_val in _env_gpio.items():
+        print_env(_env, _def_val)
+
+
 def show_help():
     """ Display the available commands. """
     print("Available commands:")
     print(" clear       - Clear the screen")
     print(" help        - Show this help message")
-    print(" versions    - Show the vOS-TS, rover_cpy and pihutwugc implementation versions")
     print(" exit        - Exit the shell")
     print(" reboot      - Reboot the system")
     print(" memuse      - Show memory usage")
+    print(" versions    - Show the vOS-TS, rover_cpy and pihutwugc implementation versions")
+    print(" env         - Show environment variables defined in settings.toml")
     print(" motor       - Run motorTest.py")
     print(" servo       - Run servoTest.py")
     print(" calib       - Run calibrateServos.py")
@@ -133,10 +207,11 @@ def show_help():
 COMMANDS = {
     "clear": clear_screen,
     "help": show_help,
-    "versions": show_versions,
     "exit": lambda: print("Exiting shell.") or exit(),
     "reboot": lambda: print("Exiting shell.") or microcontroller.reset(),
-    "memuse": lambda: memuse("print")
+    "memuse": lambda: memuse("print"),
+    "versions": show_versions,
+    "env": show_envs,
 }
 COMMANDS_RUN = {
     "motor": "motorTest.py",
