@@ -122,6 +122,7 @@ def show_envs():
     RST = "\33[0m]"
 
     # The env parameters and their default values
+    _env_wifi = {'CIRCUITPY_WIFI_SSID': 'None', 'CIRCUITPY_WIFI_PASSWORD': 'None', 'CIRCUITPY_WEB_API_PORT': '80', 'CIRCUITPY_WEB_API_PASSWORD': 'None'}
     _env_bool = {'USE_MAST_PAN': '0', 'USE_MAST_TILT': '0', 'USE_SONAR': '0', 'USE_IRSENSORS': '0', 'USE_KEYPAD': '0'}
     _env_str  = {'ROVER_STEERING_MODE': 'simple'}
     _env_indx = {'SERVO_FL' : '9', 'SERVO_FR': '11', 'SERVO_RL': '15', 'SERVO_RR': '13', 'SERVO_MP': '7', 'SERVO_MT': '6'}
@@ -155,6 +156,10 @@ def show_envs():
     print(RST)
 
     # Display env variables and their values (set or default)
+    print("# Used for WiFi and Web API access\n(set=green, default=red):")
+    for _env, _def_val in _env_wifi.items():
+        print_env(_env, _def_val)
+
     print("# Used in drivefunc.py")
     print("## Steering mode\n(set=green, default=red):")
     for _env, _def_val in _env_str.items():
