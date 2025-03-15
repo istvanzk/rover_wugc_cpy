@@ -46,37 +46,37 @@ from adafruit_hcsr04 import HCSR04
 # https://docs.circuitpython.org/projects/neopixel/en/stable/
 import neopixel
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 
 ###################### Parameters START ####################
 # All values are read from the settings.toml if they exist.
 
 # Define accessories to be enabled
 # Corresponding GPIOs for SONAR, IRSENSORS and KEYPAD are configured below.
-USE_MAST_PAN  = eval(getenv('USE_MAST_PAN', '0')) == 1
-USE_MAST_TILT = eval(getenv('USE_MAST_TILT', '0')) == 1
-USE_SONAR     = eval(getenv('USE_MAST_SONAR', '0')) == 1
-USE_IRSENSORS = eval(getenv('USE_IRSENSORS', '0')) == 1
-USE_KEYPAD    = eval(getenv('USE_KEYPAD', '0')) == 1
+USE_MAST_PAN  = getenv('USE_MAST_PAN', '0') == 1
+USE_MAST_TILT = getenv('USE_MAST_TILT', '0') == 1
+USE_SONAR     = getenv('USE_MAST_SONAR', '0') == 1
+USE_IRSENSORS = getenv('USE_IRSENSORS', '0') == 1
+USE_KEYPAD    = getenv('USE_KEYPAD', '0') == 1
 
 # Define the servo numbers (see MARS rover main board connectors)
-SERVO_FL = int(getenv('SERVO_FL', '9'))
-SERVO_RL = int(getenv('SERVO_RL', '11'))
-SERVO_FR = int(getenv('SERVO_FR', '15'))
-SERVO_RR = int(getenv('SERVO_RR', '13'))
-SERVO_MP = int(getenv('SERVO_MP', '7'))
-SERVO_MT = int(getenv('SERVO_MT', '6'))
+SERVO_FL = getenv('SERVO_FL', '9')
+SERVO_RL = getenv('SERVO_RL', '11')
+SERVO_FR = getenv('SERVO_FR', '15')
+SERVO_RR = getenv('SERVO_RR', '13')
+SERVO_MP = getenv('SERVO_MP', '7')
+SERVO_MT = getenv('SERVO_MT', '6')
 
 # Define PWM pins used to control the Left/Right DC motors (via DRV8833)
 # when using the Challenger+ RP2350 WiFi6/BLE5
 # https://ilabs.se/product/challenger-rp2350-wifi-ble/ development board.
-PWML1_Pin = eval("board.GP"+getenv('PWML1_GPIO', '2'))
-PWML2_Pin = eval("board.GP"+getenv('PWML2_GPIO', '24'))
-PWMR1_Pin = eval("board.GP"+getenv('PWMR1_GPIO', '3'))
-PWMR2_Pin = eval("board.GP"+getenv('PWMR2_GPIO', '25'))
+PWML1_Pin = eval(f"board.GP{getenv('PWML1_GPIO', '2')}")
+PWML2_Pin = eval(f"board.GP{getenv('PWML2_GPIO', '24')}")
+PWMR1_Pin = eval(f"board.GP{getenv('PWMR1_GPIO', '3')}")
+PWMR2_Pin = eval(f"board.GP{getenv('PWMR2_GPIO', '25')}")
 
 # Define RGB LEDs Pin
-LED_Pin = eval("board.GP"+getenv('LED_GPIO', '7'))
+LED_Pin = eval(f"board.GP{getenv('LED_GPIO', '7')}")
 
 # Optional pin definitions for devices controlled via 4 GPIO pins
 # when using the Challenger+ RP2350 WiFi6/BLE5
@@ -88,7 +88,7 @@ LED_Pin = eval("board.GP"+getenv('LED_GPIO', '7'))
 # Define ultrasonic sonar Pin (same pin for both Ping and Echo)
 SONAR_Pin = None
 if USE_SONAR:
-    SONAR_Pin = eval("board.GP"+getenv('SONAR_GPIO')) # GP26
+    SONAR_Pin = eval(f"board.GP{getenv('SONAR_GPIO')}") # GP26
 
 # Define IR Sensors Pins
 IRFL_Pin = None
@@ -96,18 +96,18 @@ IRFR_Pin = None
 IRLL_Pin = None
 IRLR_Pin = None
 if USE_IRSENSORS:
-    IRFL_Pin = eval("board.GP"+getenv('IRFL_GPIO')) # GP26
-    IRFR_Pin = eval("board.GP"+getenv('IRFR_GPIO')) # GP27
-    IRLL_Pin = eval("board.GP"+getenv('IRLL_GPIO')) # GP28
-    IRLR_Pin = eval("board.GP"+getenv('IRLR_GPIO')) # GP29
+    IRFL_Pin = eval(f"board.GP{getenv('IRFL_GPIO')}") # GP26
+    IRFR_Pin = eval(f"board.GP{getenv('IRFR_GPIO')}") # GP27
+    IRLL_Pin = eval(f"board.GP{getenv('IRLL_GPIO')}") # GP28
+    IRLR_Pin = eval(f"board.GP{getenv('IRLR_GPIO')}") # GP29
 
 
 # Define Keypad Pins
 KEYPADIn_Pin  = None
 KEYPADOut_Pin = None
 if USE_KEYPAD:
-    KEYPADIn_Pin  = eval("board.GP"+getenv('KEYPADIN_GPIO'))  # GP28
-    KEYPADOut_Pin = eval("board.GP"+getenv('KEYPADOUT_GPIO')) # GP29
+    KEYPADIn_Pin  = eval(f"board.GP{getenv('KEYPADIN_GPIO')}")  # GP28
+    KEYPADOut_Pin = eval(f"board.GP{getenv('KEYPADOUT_GPIO')}") # GP29
 
 if SONAR_Pin is None:
     USE_SONAR = False
