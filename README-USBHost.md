@@ -37,7 +37,8 @@ The detection of the wireless USB dongle by the USB host can be tested with the 
 
 The reading/parsing of the USB HID reports from the wireless USB dongle can be tested with the [usbreportTest.py](.lib/usbreportTest.py) CircuitPython script running on the Challenger+ RP2350 WiFi6/BLE5 board.
 
-The next sections provide a more detailed description of the USB HID reports and the way I decoded them. 
+<details>
+<summary> The next sections provide a more detailed description of the USB HID reports and the way I decoded them. </summary>
 
 ### Wirless dongle plugged into a Raspberry Pi Zero 
 
@@ -472,3 +473,4 @@ Identified operating modes:
     buf[13]: 0-255 = Cross
     buf[14]: 0-255 = Square
 ```
+</details>
