@@ -15,14 +15,14 @@ import sys
 from os import listdir, getenv
 import gc
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 
 def shell():
     """ The virtual shel script. """
-    show_versions()
     #start_time = time.monotonic()
     clear_screen()  # Auto-clear screen on start
     print("Welcome to vOS-TS for M.A.R.S Rover Robot drive functions testing.")
+    show_versions()
     show_help()
     while True:
         try:
@@ -126,7 +126,7 @@ def show_envs():
     _env_bool = {'USE_MAST_PAN': '0', 'USE_MAST_TILT': '0', 'USE_SONAR': '0', 'USE_IRSENSORS': '0', 'USE_KEYPAD': '0'}
     _env_str  = {'ROVER_STEERING_MODE': 'simple'}
     _env_indx = {'SERVO_FL' : '9', 'SERVO_FR': '11', 'SERVO_RL': '15', 'SERVO_RR': '13', 'SERVO_MP': '7', 'SERVO_MT': '6'}
-    _env_pwm  = {'PWML1_GPIO': '2', 'PWML2_GPIO': '24', 'PWML1_GPIO': '3', 'PWML2_GPIO': '25', 'LED_GPIO': '7'}
+    _env_pwm  = {'PWML1_GPIO': '2', 'PWML2_GPIO': '24', 'PWMR1_GPIO': '3', 'PWMR2_GPIO': '25', 'LED_GPIO': '7'}
     _env_gpio = {'SONAR_GPIO': 'None', 'IRFL_GPIO': 'None', 'IRFR_GPIO': 'None', 'IRLL_GPIO': 'None', 'IRLR_GPIO': 'None', 'KEYPADIN_GPIO': 'None', 'KEYPADOUT_GPIO': 'None'}
 
 
@@ -138,7 +138,8 @@ def show_envs():
         else:
             _fg = RED_FG
             _v = def_val      
-        print(f"  {env_str} = {_fg}{_v}{RST}")
+        #print(f"  {env_str} = {_fg}{_v}{RST}")
+        print(f"  {env_str} = {_v}")
 
     def print_env_bool(env_str, def_val):
         """ Print boolean env variable value: set 1 (green), set 0 (blue) or default (red). """
@@ -150,13 +151,14 @@ def show_envs():
         else:
             _fg = RED_FG
             _v = def_val      
-        print(f"  {env_str} = {_fg}{_v}{RST}")
+        #print(f"  {env_str} = {_fg}{_v}{RST}")
+        print(f"  {env_str} = {_v}")
 
     # Reset the colors
     print(RST)
 
     # Display env variables and their values (set or default)
-    print("# Used for WiFi and Web API access\n(set=green, default=red):")
+    print("# Used for WiFi and Web API access")#\n(set=green, default=red):")
     for _env, _def_val in _env_wifi.items():
         print_env(_env, _def_val)
 
@@ -167,8 +169,8 @@ def show_envs():
 
     print()
     print("# Used in rover_cpy.py")
-    print("## Define accessories to be enabled\n(Yes=green, No=blue, default=red):")
-    for _env, _def_v in _env_bool.items():
+    print("## Define accessories to be enabled")#\n(Yes=green, No=blue, default=red):")
+    for _env, _def_val in _env_bool.items():
         print_env_bool(_env, _def_val)
 
     print()
@@ -177,12 +179,12 @@ def show_envs():
         print_env(_env, _def_val)
 
     print()
-    print("## Mandatory 4 PWM GPIO pins used to control\nthe Left&Right DC motors and the RGB LED strip\n(set=green, default=red):")
+    print("## Mandatory 4 PWM GPIO pins used to control\nthe Left&Right DC motors and the RGB LED strip")#\n(set=green, default=red):")
     for _env, _def_val in _env_pwm.items():
         print_env(_env, _def_val)
 
     print()
-    print("## Optional 4 GPIO pins\n(set=green, default=red):")
+    print("## Optional 4 GPIO pins")#\n(set=green, default=red):")
     for _env, _def_val in _env_gpio.items():
         print_env(_env, _def_val)
 
