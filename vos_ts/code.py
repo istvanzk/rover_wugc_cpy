@@ -15,7 +15,7 @@ import sys
 from os import listdir, getenv
 import gc
 
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 
 def shell():
     """ The virtual shel script. """
@@ -131,7 +131,7 @@ def show_envs():
 
 
     def print_env(env_str, def_val):
-        """ Print env variable value: set (green) or default (red). """
+        """ Print env variable values")#: set (green) or default (red). """
         _v  = getenv(env_str)
         if _v:
             _fg = GREEN_FG
@@ -142,7 +142,7 @@ def show_envs():
         print(f"  {env_str} = {_v}")
 
     def print_env_bool(env_str, def_val):
-        """ Print boolean env variable value: set 1 (green), set 0 (blue) or default (red). """
+        """ Print boolean env variable values")#: set 1 (green), set 0 (blue) or default (red). """
         _v  = getenv(env_str)
         if _v == '1':
             _fg = GREEN_FG
@@ -155,15 +155,16 @@ def show_envs():
         print(f"  {env_str} = {_v}")
 
     # Reset the colors
-    print(RST)
+    #print(RST)
 
     # Display env variables and their values (set or default)
     print("# Used for WiFi and Web API access")#\n(set=green, default=red):")
     for _env, _def_val in _env_wifi.items():
         print_env(_env, _def_val)
 
+    print()
     print("# Used in drivefunc.py")
-    print("## Steering mode\n(set=green, default=red):")
+    print("## Steering mode")#\n(set=green, default=red):")
     for _env, _def_val in _env_str.items():
         print_env(_env, _def_val)
 
@@ -174,7 +175,7 @@ def show_envs():
         print_env_bool(_env, _def_val)
 
     print()
-    print("## Define the servo indeces\n(set=green, default=red):")
+    print("## Define the servo indeces")#\n(set=green, default=red):")
     for _env, _def_val in _env_indx.items():
         print_env(_env, _def_val)
 
