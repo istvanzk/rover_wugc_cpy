@@ -171,7 +171,7 @@ def show_envs():
 
     print()
     print("# Used in drivefunc.py")
-    print("## Steering mode")#\n(set=green, default=red):")
+    print("## Steering mode\n(set=green, default=red):")
     for _env, _def_val in _env_str.items():
         print_env(_env, _def_val)
 
