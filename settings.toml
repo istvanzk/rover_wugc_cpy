@@ -12,7 +12,7 @@
 
 # Driving mode: "simple" or "ackermann"
 # Used in lib/drivefunc.py
-ROVER_STEERING_MODE = "simple" 
+ROVER_STEERING_MODE = "ackermann" 
 
 # Accessories to be enabled (0=False/No, 1=True/Yes)
 # Corresponding GPIOs for SONAR, IRSENSORS and KEYPAD are configured below.
