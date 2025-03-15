@@ -29,7 +29,7 @@ try:
 except:
     raise RuntimeError("M.A.R.S. Rover CircuitPython library is not available! Please make sure it is in the /lib folder.")
 
-VERSION = "1.0.0"
+VERSION = "1.0.2"
 
 # Steering mode
 ROVER_STEERING_MODE = getenv('ROVER_STEERING_MODE','simple') # 'simple' or 'ackermann'
@@ -44,8 +44,8 @@ ROVER_WhR = 45.0/2.0
 # The direction filter
 DIR_FILTER_LNG = 3
 dir_filter = [0.0,0.0,0.0]
-rover_speed = -1
-rover_dir = -1
+rover_speed = 0
+rover_dir = 0
 prev_dir = 0
 
 # The mast pan&tilt parameters
@@ -139,7 +139,7 @@ def drive_rover(
             l_r=l_r,
             f_b=f_b,
             max_dir=50)
-
+        
         # Set rover direction and rover speed
         if rover_speed != rover_speed_current or rover_dir != rover_dir_current:
             _move_rover(
@@ -593,14 +593,14 @@ def _move_rover(
         rover.forward(abs(int(speed_per)))
 
         # Set forward-back left-right LED
-        set_rlfb_led(True, dir_deg)
+        #set_rlfb_led(True, dir_deg)
 
     elif speed_per < 0:
         # Move backward
         rover.reverse(abs(int(speed_per)))
 
         # Set forward-back left-right LED
-        set_rlfb_led(False, dir_deg)
+        #set_rlfb_led(False, dir_deg)
 
 def _move_rover_ackermann(
     dir_deg: float = 0,
