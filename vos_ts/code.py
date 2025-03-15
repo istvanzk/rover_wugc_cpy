@@ -15,7 +15,23 @@ import sys
 from os import listdir, getenv
 import gc
 
-VERSION = "1.0.4"
+VERSION = "1.0.5"
+
+# VT100 control sequences
+# https://docs.circuitpython.org/en/latest/shared-bindings/terminalio/index.html
+RED_FG = "\33[31m"
+#RED_BG = "\33[41m"
+GREEN_FG = "\33[32m"
+#GREEN_BG = "\33[42m"
+YELLOW_FG = "\33[33m"
+#YELLOW_BG = "\33[43m"
+BLUE_FG = "\33[34m"
+#BLUE_BG = "\33[44m"
+MAGENTA_FG = "\33[35m"
+#MAGENTA_BG = "\33[45m"
+#WHITE_FG = "\33[37m"
+#WHITE_BG = "\33[47m"
+RST = "\33[0m"
 
 def shell():
     """ The virtual shel script. """
@@ -74,10 +90,10 @@ def memuse(call:str):
     free_ram = gc.mem_free()
     usage_percent = (used_ram / total_ram) * 100 if total_ram > 0 else 0
 
-    usedmsg = (f"Used RAM: {used_ram:,} bytes")
-    totalmsg = (f"Total RAM: {total_ram:,} bytes")
-    freemsg  = (f"Free RAM: {free_ram:,} bytes")
-    percmsg = (f"Memory Usage: {usage_percent:.2f}%")
+    usedmsg = (f"Used RAM: {YELLOW_FG}{used_ram:,} bytes{RST}")
+    totalmsg = (f"Total RAM: {YELLOW_FG}{total_ram:,} bytes{RST}")
+    freemsg  = (f"Free RAM: {YELLOW_FG}{free_ram:,} bytes{RST}")
+    percmsg = (f"Memory Usage: {YELLOW_FG}{usage_percent:.2f}%{RST}")
     msg_list = [usedmsg, totalmsg, freemsg, percmsg]
     for msg in msg_list:
         if call == "print":
@@ -90,41 +106,27 @@ def exit():
 
 def show_versions():
     """ Displays the version of this vOS shell and of the rover modules. """
-    print (f"vOS-TS version: {VERSION}")
+    print (f"vOS-TS version: {YELLOW_FG}{VERSION}{RST}")
     try:
         from rover_cpy import VERSION as rover_version
-        print (f"Rover API version: {rover_version}")
+        print (f"Rover API version: {YELLOW_FG}{rover_version}{RST}")
     except ImportError as e:
         print(f"Error importing rover_cpy library: {e}")
 
     try:
         from drivefunc import VERSION as drive_version
-        print (f"Drive API version: {drive_version}")
+        print (f"Drive API version: {YELLOW_FG}{drive_version}{RST}")
     except ImportError as e:
         print(f"Error importing drivefunc library: {e}")
 
     try:
         from pihutwugc import VERSION as pihut_version
-        print (f"PiHut controller API version: {pihut_version}")
+        print (f"PiHut controller API version: {YELLOW_FG}{pihut_version}{RST}")
     except ImportError as e:
         print(f"Error importing pihutwugc library: {e}")
 
 def show_envs():
     """ Display the environment variables defined in settings.toml """
-    # VT100 control sequences
-    # https://docs.circuitpython.org/en/latest/shared-bindings/terminalio/index.html
-    RED_FG = "\33[31m"
-    #RED_BG = "\33[41m"
-    GREEN_FG = "\33[32m"
-    #GREEN_BG = "\33[42m"
-    #YELLOW_FG = "\33[33m"
-    #YELLOW_BG = "\33[43m"
-    BLUE_FG = "\33[34m"
-    BLUE_BG = "\33[44m"
-    #WHITE_FG = "\33[37m"
-    #WHITE_BG = "\33[47m"
-    
-    RST = "\33[0m"
 
     # The env parameters and their default values
     _env_wifi = {'CIRCUITPY_WIFI_SSID': 'None', 'CIRCUITPY_WIFI_PASSWORD': 'None', 'CIRCUITPY_WEB_API_PORT': '80', 'CIRCUITPY_WEB_API_PASSWORD': 'None'}
@@ -197,23 +199,23 @@ def show_envs():
 
 def show_help():
     """ Display the available commands. """
-    print("Available commands:")
-    print(" clear       - Clear the screen")
-    print(" help        - Show this help message")
-    print(" exit        - Exit the shell")
-    print(" reboot      - Reboot the system")
-    print(" memuse      - Show memory usage")
-    print(" versions    - Show the vOS-TS, rover_cpy and pihutwugc implementation versions")
-    print(" env         - Show environment variables defined in settings.toml")
-    print(" motor       - Run motorTest.py")
-    print(" servo       - Run servoTest.py")
-    print(" calib       - Run calibrateServos.py")
-    print(" mast        - Run mastTest.py")
-    print(" leds        - Run ledTest.py")
-    print(" drive       - Run driveTest.py")
-    print(" wugc        - Run wugcTest.py")
-    print(" usbhost     - Run usbhostTest.py")
-    print(" usbrep      - Run usbreportTest.py")
+    print(f"{MAGENTA_FG}Available commands:{RST}")
+    print(f" {MAGENTA_FG}clear{RST}       - Clear the screen")
+    print(f" {MAGENTA_FG}help{RST}        - Show this help message")
+    print(f" {MAGENTA_FG}exit{RST}        - Exit the shell")
+    print(f" {MAGENTA_FG}reboot{RST}      - Reboot the system")
+    print(f" {MAGENTA_FG}mem{RST}         - Show memory usage")
+    print(f" {MAGENTA_FG}ver{RST}         - Show the vOS-TS, rover_cpy, driefunc and pihutwugc implementation versions")
+    print(f" {MAGENTA_FG}env{RST}         - Show environment variables defined in settings.toml")
+    print(f" {MAGENTA_FG}motor{RST}       - Run motorTest.py")
+    print(f" {MAGENTA_FG}servo{RST}       - Run servoTest.py")
+    print(f" {MAGENTA_FG}calib{RST}       - Run calibrateServos.py")
+    print(f" {MAGENTA_FG}mast{RST}        - Run mastTest.py")
+    print(f" {MAGENTA_FG}leds{RST}        - Run ledTest.py")
+    print(f" {MAGENTA_FG}drive{RST}       - Run driveTest.py")
+    print(f" {MAGENTA_FG}wugc{RST}        - Run wugcTest.py")
+    print(f" {MAGENTA_FG}usbhost{RST}     - Run usbhostTest.py")
+    print(f" {MAGENTA_FG}usbrep{RST}      - Run usbreportTest.py")
 
 
 # The available commands
@@ -222,8 +224,8 @@ COMMANDS = {
     "help": show_help,
     "exit": lambda: print("Exiting shell.") or exit(),
     "reboot": lambda: print("Exiting shell.") or microcontroller.reset(),
-    "memuse": lambda: memuse("print"),
-    "versions": show_versions,
+    "mem": lambda: memuse("print"),
+    "ver": show_versions,
     "env": show_envs,
 }
 COMMANDS_RUN = {
