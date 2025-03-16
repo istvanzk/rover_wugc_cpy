@@ -18,6 +18,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import asyncio
 from os import getenv
 from time import sleep
 from math import tan, atan2, pi, sqrt
@@ -29,7 +30,11 @@ try:
 except:
     raise RuntimeError("M.A.R.S. Rover CircuitPython library is not available! Please make sure it is in the /lib folder.")
 
-VERSION = "1.0.2"
+VERSION = "1.0.5"
+
+# Use the async version of the LEDs functions
+# The *_async functions are to be used in async tasks (not implemented in this module)
+USE_ASYNC = True
 
 # Steering mode
 ROVER_STEERING_MODE = getenv('ROVER_STEERING_MODE','simple') # 'simple' or 'ackermann'
@@ -96,9 +101,10 @@ def init_rover(led_brightness: float = 0) -> None:
         if led_brightness > 0 and led_brightness <= 1:
             # Init rover with provided LED brightness
             rover.init(led_brightness)
-            # Set all LEDs to green
-            flash_all_leds(3, 0.5, LED_GREEN)
-            flash_all_leds(1, 0.1, LED_GREEN_H)
+            if not USE_ASYNC:
+                # Set all LEDs to green
+                flash_all_leds(3, 0.3, LED_GREEN)
+                #flash_all_leds(1, 0.1, LED_GREEN_H)
         else:
             # No LEDs used
             rover.init()
@@ -124,10 +130,19 @@ def drive_rover(
         Left-right axis value, ranges from -1.0 to +1.0
     :param f_b: 
         Fwd-back axis value, ranges from -1.0 to +1.0
+
+    : return rover_dir:
+        Rover steering angle (-50 to +50 deg)
+    : return rover_speed:
+        Rover speed (-100 to 100)
     """
     # Driving modes
     global rover_speed
     global rover_dir
+    global rover
+    if rover is None:
+        return
+
     if ROVER_STEERING_MODE == 'simple':
         # Get rover speed from mixer function (= rover speed value for all 6 motors)
         rover_speed_current, _ = _mixer_speed(
@@ -157,7 +172,8 @@ def drive_rover(
         # Get rover direction from mixer function (= steering angle of the rover)
         rover_dir_current = _mixer_dir(
             l_r=l_r,
-            f_b=f_b)
+            f_b=f_b,
+            max_dir=50)
 
         # Set rover rover direction and rover speed
         if rover_speed != rover_speed_current or rover_dir != rover_dir_current:
@@ -166,6 +182,8 @@ def drive_rover(
                 speed_per=rover_speed_current)
             rover_dir = rover_dir_current
             rover_speed = rover_speed_current
+
+    return rover_dir, rover_speed
 
 def stop_rover() -> None:
     """
@@ -178,8 +196,9 @@ def stop_rover() -> None:
     # Stop rover
     rover.stop()
 
-    # Flash 3 times all LEDs in red
-    flash_all_leds(2, 0.4, LED_RED)
+    if not USE_ASYNC:
+        # Flash 3 times all LEDs in red
+        flash_all_leds(2, 0.4, LED_RED)
 
 def brake_rover() -> None:
     """
@@ -191,8 +210,9 @@ def brake_rover() -> None:
 
     rover.brake()
 
-    # Flash 3 times all LEDs in red
-    flash_all_leds(2, 0.2, LED_RED)
+    if not USE_ASYNC:
+        # Flash 3 times all LEDs in red
+        flash_all_leds(2, 0.2, LED_RED)
 
 
 def move_mast(
@@ -216,6 +236,10 @@ def move_mast(
     """
     global pan_deg
     global tilt_deg
+    global rover
+    if rover is None:
+        return
+
     # Pan step
     if dleft:
         pan_deg -= MAST_PAN_STEP
@@ -236,6 +260,11 @@ def move_mast(
     _move_mast(p_deg=pan_deg, t_deg=tilt_deg)
 
 
+def reset_mast():
+    """ Reset the position of the mast. """
+    _move_mast(p_deg=0, t_deg=0)
+
+
 def cleanup_rover() -> None:
     """
     Cleanup rover library.
@@ -245,8 +274,9 @@ def cleanup_rover() -> None:
         gc.collect()
         return
 
-    # Rotating LED lights
-    seq_all_leds(2, 0.25, LED_RED)
+    if not USE_ASYNC:
+        # Rotating LED lights
+        seq_all_leds(2, 0.25, LED_RED)
 
     # Clean exit
     del rover
@@ -284,7 +314,7 @@ def rumble_end(wugc: int = None) -> None:
 def flash_all_leds(
     fnum: int = 3, 
     dly: float = 0.5, 
-    col: tuple = (0, 0, 0)
+    col: tuple = (0, 0, 0),
 ) -> None:
     """
     Flash all LEDs simultanously.
@@ -299,13 +329,41 @@ def flash_all_leds(
     global rover
     if rover is None:
         return
-    if rover.LED_Device is not None:
-        for _ in range(fnum):
-            rover.clear()
-            sleep(dly)
-            rover.setColor(col)
-            sleep(dly)          
+    if rover.LED_Device is None:
+        return
+    for _ in range(fnum):
         rover.clear()
+        sleep(dly)
+        rover.setColor(col)
+        sleep(dly)          
+    rover.clear()
+
+async def flash_all_leds_async(
+    fnum: int = 3, 
+    dly: float = 0.5, 
+    col: tuple = (0, 0, 0),
+) -> None:
+    """
+    ASYNC Flash all LEDs simultanously.
+
+    :param fnum: 
+        Number of flashes
+    :param dly: 
+        Delay in seconds between flashes
+    :param col: 
+        LED light color to use
+    """
+    global rover
+    if rover is None:
+        return
+    if rover.LED_Device is None:
+        return
+    for _ in range(fnum):
+        rover.clear()
+        await asyncio.sleep(dly)
+        rover.setColor(col)
+        await asyncio.sleep(dly)          
+    rover.clear()
 
 
 def seq_all_leds(
@@ -317,7 +375,7 @@ def seq_all_leds(
     Flash all LEDs in sequence.
 
     :param fnum: 
-        Number of flashes
+        Number of sequences (all LEDs)
     :param dly: 
         Delay in seconds between flashes/LEDs
     :param col: 
@@ -326,16 +384,45 @@ def seq_all_leds(
     global rover
     if rover is  None:
         return
-    if rover.LED_Device is not None:
-        rover.clear()
-        for _ in range(fnum):
-            for _l in range(rover.LED_numPixels):
-                rover.clear()
-                rover.setPixel(_l, col)
-                rover.show()
-                sleep(dly)
-        rover.clear()
+    if rover.LED_Device is None:
+        return
+    rover.clear()
+    for _ in range(fnum):
+        for _l in range(rover.LED_numPixels):
+            rover.clear()
+            rover.setPixel(_l, col)
+            rover.show()
+            sleep(dly)
+    rover.clear()
 
+async def seq_all_leds_async(
+    fnum: int = 3, 
+    dly: float = 0.5, 
+    col: tuple = (0, 0, 0)
+) -> None:
+    """
+    ASYNC Flash all LEDs in sequence.
+
+    :param fnum: 
+        Number of sequences (all LEDs)
+    :param dly: 
+        Delay in seconds between flashes/LEDs
+    :param col: 
+        LED light color to use
+    """
+    global rover
+    if rover is  None:
+        return
+    if rover.LED_Device is None:
+        return
+    rover.clear()
+    for _ in range(fnum):
+        for _l in range(rover.LED_numPixels):
+            rover.clear()
+            rover.setPixel(_l, col)
+            rover.show()
+            await asyncio.sleep(dly)
+    rover.clear()
 
 def flash_led(
     led: int = 0,
@@ -361,22 +448,58 @@ def flash_led(
     global rover
     if rover is None:
         return
-    if rover.LED_Device is not None:
-        for _ in range(fnum):
-            rover.setPixel(led, col1)
-            rover.show()
-            sleep(dly)
-            rover.setPixel(led, col2)
-            rover.show()
-            sleep(dly)
-        rover.clear()
+    if rover.LED_Device is None:
+        return
+    for _ in range(fnum):
+        rover.setPixel(led, col1)
+        rover.show()
+        sleep(dly)
+        rover.setPixel(led, col2)
+        rover.show()
+        sleep(dly)
+    rover.clear()
+
+async def flash_led_async(
+    led: int = 0,
+    fnum: int = 3, 
+    dly: float = 0.5, 
+    col1: tuple = LED_BLACK, 
+    col2: tuple = LED_WHITE
+) -> None:
+    """
+    ASYNC Flash a LED between two colors.
+
+    :param led: 
+        LED number, ranges from 0 to LED_NUM-1
+    :param fnum: 
+        Number of flashes
+    :param dly: 
+        Delay in seconds between flashes/LEDs
+    :param col1: 
+        First LED light color to use
+    :param col2: 
+        Second LED light color to use
+    """
+    global rover
+    if rover is None:
+        return
+    if rover.LED_Device is None:
+        return
+    for _ in range(fnum):
+        rover.setPixel(led, col1)
+        rover.show()
+        await asyncio.sleep(dly)
+        rover.setPixel(led, col2)
+        rover.show()
+        await asyncio.sleep(dly)
+    rover.clear()
 
 def set_rlfb_led(
     fwd: bool = True, 
     dir_deg: float = 0.0
 ) -> None:
     """
-    Set forward-back and left-right LED.
+    Set forward-rear and left-right LEDs.
 
     :param fwd: 
         Movement forward (True) or reverse (False)
@@ -386,46 +509,106 @@ def set_rlfb_led(
     global rover
     if rover is None:
         return
-    if rover.LED_Device is not None:
-        if fwd:
-            # Set all LEDs
-            rover.setPixel(1, LED_WHITE)
+    if rover.LED_Device is None:
+        return
+    if fwd:
+        # Set all LEDs
+        rover.setPixel(1, LED_WHITE)
+        rover.setPixel(2, LED_WHITE)
+        rover.setPixel(0, LED_RED_H)
+        rover.setPixel(3, LED_RED_H)
+        rover.show()
+
+        # Blink forward-right LED
+        if dir_deg > 0:  # right
+            flash_led(2, 2, 0.5, LED_RED, LED_BLACK)
             rover.setPixel(2, LED_WHITE)
-            rover.setPixel(0, LED_RED_H)
-            rover.setPixel(3, LED_RED_H)
+            rover.show()
+        # Blink forward-left LED
+        elif dir_deg < 0:  # left
+            flash_led(1, 2, 0.5, LED_RED, LED_BLACK)
+            rover.setPixel(1, LED_WHITE)
             rover.show()
 
-            # Blink forward-right LED
-            if dir_deg > 0:  # right
-                flash_led(2, 2, 0.5, LED_RED, LED_BLACK)
-                rover.setPixel(2, LED_WHITE)
-                rover.show()
-            # Blink forward-left LED
-            elif dir_deg < 0:  # left
-                flash_led(1, 2, 0.5, LED_RED, LED_BLACK)
-                rover.setPixel(1, LED_WHITE)
-                rover.show()
+    else:
+        # Set all LEDs
+        rover.setPixel(1, LED_WHITE_H)
+        rover.setPixel(2, LED_WHITE_H)
+        rover.setPixel(0, LED_RED)
+        rover.setPixel(3, LED_RED)
+        rover.show()
 
-        else:
-            # Set all LEDs
-            rover.setPixel(1, LED_WHITE_H)
-            rover.setPixel(2, LED_WHITE_H)
-            rover.setPixel(0, LED_RED)
+        # Blink back-right LED
+        if dir_deg > 0:  # right
+            flash_led(3, 2, 0.5, LED_RED, LED_BLACK)
             rover.setPixel(3, LED_RED)
             rover.show()
 
-            # Blink back-right LED
-            if dir_deg > 0:  # right
-                flash_led(3, 2, 0.5, LED_RED, LED_BLACK)
-                rover.setPixel(3, LED_RED)
-                rover.show()
+        # Blink back-left LED
+        elif dir_deg < 0:  # left
+            flash_led(0, 2, 0.5, LED_RED, LED_BLACK)
+            rover.setPixel(0, LED_RED)
+            rover.show()
 
-            # Blink back-left LED
-            elif dir_deg < 0:  # left
-                flash_led(0, 2, 0.5, LED_RED, LED_BLACK)
-                rover.setPixel(0, LED_RED)
-                rover.show()
+async def set_rlfb_led_async(
+    fwd: bool = True, 
+    dir_deg: float = 0.0
+) -> None:
+    """
+    ASYNC Set forward-rear and left-right LEDs.
 
+    :param fwd: 
+        Movement forward (True) or reverse (False)
+    :param dir_deg: 
+        Movement right (>0) or straight (=0) or left (<0)
+    """
+    global rover
+    if rover is None:
+        return
+    if rover.LED_Device is None:
+        return
+    if fwd:
+        # Set all LEDs
+        rover.setPixel(1, LED_WHITE)
+        rover.setPixel(2, LED_WHITE)
+        rover.setPixel(0, LED_RED_H)
+        rover.setPixel(3, LED_RED_H)
+        rover.show()
+
+        # Blink forward-right LED
+        if dir_deg > 0:  # right
+            flash_led_async(2, 2, 0.5, LED_RED, LED_BLACK)
+            rover.setPixel(2, LED_WHITE)
+            rover.show()
+        # Blink forward-left LED
+        elif dir_deg < 0:  # left
+            flash_led_async(1, 2, 0.5, LED_RED, LED_BLACK)
+            rover.setPixel(1, LED_WHITE)
+            rover.show()
+
+    else:
+        # Set all LEDs
+        rover.setPixel(1, LED_WHITE_H)
+        rover.setPixel(2, LED_WHITE_H)
+        rover.setPixel(0, LED_RED)
+        rover.setPixel(3, LED_RED)
+        rover.show()
+
+        # Blink back-right LED
+        if dir_deg > 0:  # right
+            flash_led_async(3, 2, 0.5, LED_RED, LED_BLACK)
+            rover.setPixel(3, LED_RED)
+            rover.show()
+
+        # Blink back-left LED
+        elif dir_deg < 0:  # left
+            flash_led_async(0, 2, 0.5, LED_RED, LED_BLACK)
+            rover.setPixel(0, LED_RED)
+            rover.show()
+
+    await asyncio.sleep(0)
+
+    
 #
 # Internal Joystick controlls mixers functions
 #
@@ -572,8 +755,6 @@ def _move_rover(
         ranges from -100.0 to 100.0 (percentage of max speed)
     """
     global rover
-    if rover is None:
-        return
 
     if dir_deg is not None:
         rover.setServoFrontLeft(dir_deg)
@@ -585,8 +766,9 @@ def _move_rover(
         # Coast to stop
         rover.stop()
 
-        # Set all LED to red
-        flash_all_leds(1, 0.1, LED_RED_H)
+        if not USE_ASYNC:
+            # Set all LED to red
+            flash_all_leds(1, 0.1, LED_RED_H)
 
     elif speed_per > 0:
         # Move forward
@@ -624,8 +806,6 @@ def _move_rover_ackermann(
     """
     global prev_dir
     global rover
-    if rover is None:
-        return
 
     # Calculate the Ackermann steering parameters
     if dir_deg is not None:
@@ -651,22 +831,25 @@ def _move_rover_ackermann(
         speed_left = 0
         speed_right = 0
 
-        # Set all LED to red
-        flash_all_leds(1, 0.1, LED_RED_H)
+        if not USE_ASYNC:
+            # Set all LED to red
+            flash_all_leds(1, 0.1, LED_RED_H)
 
     elif speed_per > 0:
         # Move forward
         rover.turnForward(speed_left, speed_right)
 
-        # Set front-back left-right LEDs
-        set_rlfb_led(True, dir_deg)
+        if not USE_ASYNC:
+            # Set front-back left-right LEDs
+            set_rlfb_led(True, dir_deg)
 
     elif speed_per < 0:
         # Move backward
         rover.turnReverse(speed_left, speed_right)
 
-        # Set front-back left-right LEDs
-        set_rlfb_led(False, dir_deg)
+        if not USE_ASYNC:
+            # Set front-back left-right LEDs
+            set_rlfb_led(False, dir_deg)
 
 #
 # Internal rover mast control functions
@@ -685,8 +868,6 @@ def _move_mast(p_deg: float = None, t_deg: float = None) -> None:
         A None value keeps unchanged the current direction       
     """
     global rover
-    if rover is None:
-        return
 
     if p_deg is not None:
         rover.setServoMastPan(p_deg)
