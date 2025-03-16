@@ -63,8 +63,8 @@ class MastParams:
 
 class LEDParams:
     """ Class for sharing the LEDs control parameters between async tasks. """
-    def __init__(self, brighness=None):
-        if brighness > 0:
+    def __init__(self, brightness=None):
+        if brightness > 0:
             self.active = True
         else:
             self.active = False
@@ -146,35 +146,40 @@ async def drivetask(drive_params, leds_params):
     # Init the rover
     init_rover(LED_BRIGHT)
 
-    leds_params.startup = True
-    await asyncio.sleep(1.0)
-    leds_params.startup = False
+    #leds_params.startup = True
+    asyncio.create_task(flash_all_leds_async(3, 0.5, LED_GREEN))
+    await asyncio.sleep(2.5)
 
     # Control loop
     while drive_params.active:
+        # LEDs indicators
+        #leds_params.stop  = False
+        #leds_params.brake = False
+        leds_params.dir   = 0
+        leds_params.speed = 0
+
         if drive_params.stop:
             # Stop rover movement
             stop_rover()
-            leds_params.stop = True
-            await asyncio.sleep(0.5)
-            leds_params.stop = False
+            print('Drive: stop')
+            asyncio.create_task(seq_all_leds_async(3, 0.3, LED_RED))
+            #leds_params.stop = True
+            await asyncio.sleep(4.0)
         elif drive_params.brake:
             # Brake rover movement
             brake_rover()
-            leds_params.brake = True
-            await asyncio.sleep(0.5)
-            leds_params.brake = False
+            print('Drive: brake')
+            asyncio.create_task(seq_all_leds_async(2, 0.2, LED_RED))
+            #leds_params.brake = True
+            await asyncio.sleep(2.0)
         else:
-            # LEDs indicators
-            leds_params.stop = False
-            leds_params.brake = False
-            leds_params.dir   = 0
-            leds_params.speed = 0
             # Drive the rover
-            leds_params.dir, leds_params.speed  = drive_rover(yaw = 0.0, 
-                                                throttle = drive_params.ly, 
-                                                l_r = drive_params.rx, 
-                                                f_b = drive_params.ry)
+            leds_params.dir, leds_params.speed = drive_rover(
+                yaw = 0.0, 
+                throttle = drive_params.ly, 
+                l_r = drive_params.rx, 
+                f_b = drive_params.ry)
+            asyncio.create_task(set_rlfb_led_async(leds_params.speed>0, leds_params.dir))
 
         await asyncio.sleep(0)
 
@@ -213,20 +218,25 @@ async def ledstask(leds_params):
 
     while leds_params.active:
         if leds_params.startup:
-            flash_all_leds_async(3, 0.5, LED_GREEN)
+            asyncio.run(flash_all_leds_async(3, 0.5, LED_GREEN))
             leds_params.startup = False
+            print('LEDS startup')
             await asyncio.sleep(0)
 
         elif leds_params.stop:
-            seq_all_leds_async(3, 0.3, LED_RED)
+            asyncio.run(seq_all_leds_async(3, 0.3, LED_RED))
+            leds_params.stop = False
+            print('LEDS stop')
             await asyncio.sleep(0)
 
         elif leds_params.brake:
-            seq_all_leds_async(2, 0.2, LED_RED)
+            asyncio.run(seq_all_leds_async(2, 0.2, LED_RED))
+            leds_params.brake = False
+            print('LEDS brake')
             await asyncio.sleep(0)
 
         else:
-            set_rlfb_led_async(leds_params.speed>0, leds_params.dir)
+            asyncio.run(set_rlfb_led_async(leds_params.speed>0, leds_params.dir))
             await asyncio.sleep(0)
 
     # End/exit
@@ -246,10 +256,10 @@ async def main():
     drive_task = asyncio.create_task(drivetask(drive_params, leds_params))
     mast_task  = asyncio.create_task(masttask(mast_params, leds_params))
     other_task = asyncio.create_task(othertask(other_params, leds_params))
-    leds_task  = asyncio.create_task(ledstask(leds_params))
+    #leds_task  = asyncio.create_task(ledstask(leds_params))
 
     # This will run until all tasks exit
-    await asyncio.gather(wugc_task, drive_task, mast_task, leds_task, other_task)
+    await asyncio.gather(wugc_task, drive_task, mast_task, other_task)
 
 # Run the async tasks
 asyncio.run(main())

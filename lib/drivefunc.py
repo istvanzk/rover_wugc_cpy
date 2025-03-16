@@ -359,10 +359,10 @@ async def flash_all_leds_async(
     if rover.LED_Device is None:
         return
     for _ in range(fnum):
-        rover.clear()
-        await asyncio.sleep(dly)
         rover.setColor(col)
         await asyncio.sleep(dly)          
+        rover.clear()
+        await asyncio.sleep(dly)
     rover.clear()
 
 
@@ -577,14 +577,23 @@ async def set_rlfb_led_async(
 
         # Blink forward-right LED
         if dir_deg > 0:  # right
-            flash_led_async(2, 2, 0.5, LED_RED, LED_BLACK)
-            rover.setPixel(2, LED_WHITE)
-            rover.show()
+            for _ in range(2):
+                await asyncio.sleep(0.5)
+                rover.setPixel(2, LED_BLUE)
+                rover.show()
+                await asyncio.sleep(0.5)
+                rover.setPixel(2, LED_WHITE)
+                rover.show()
+
         # Blink forward-left LED
         elif dir_deg < 0:  # left
-            flash_led_async(1, 2, 0.5, LED_RED, LED_BLACK)
-            rover.setPixel(1, LED_WHITE)
-            rover.show()
+            for _ in range(2):
+                await asyncio.sleep(0.5)
+                rover.setPixel(1, LED_BLUE)
+                rover.show()
+                await asyncio.sleep(0.5)
+                rover.setPixel(1, LED_WHITE)
+                rover.show()
 
     else:
         # Set all LEDs
@@ -596,19 +605,27 @@ async def set_rlfb_led_async(
 
         # Blink back-right LED
         if dir_deg > 0:  # right
-            flash_led_async(3, 2, 0.5, LED_RED, LED_BLACK)
-            rover.setPixel(3, LED_RED)
-            rover.show()
+            for _ in range(2):
+                await asyncio.sleep(0.5)
+                rover.setPixel(3, LED_BLUE)
+                rover.show()
+                await asyncio.sleep(0.5)
+                rover.setPixel(3, LED_RED)
+                rover.show()
 
         # Blink back-left LED
         elif dir_deg < 0:  # left
-            flash_led_async(0, 2, 0.5, LED_RED, LED_BLACK)
-            rover.setPixel(0, LED_RED)
-            rover.show()
+            for _ in range(2):
+                await asyncio.sleep(0.5)
+                rover.setPixel(0, LED_BLUE)
+                rover.show()
+                await asyncio.sleep(0.5)
+                rover.setPixel(0, LED_RED)
+                rover.show()
 
-    await asyncio.sleep(0)
+    #await asyncio.sleep(0)
 
-    
+
 #
 # Internal Joystick controlls mixers functions
 #
