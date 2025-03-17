@@ -146,7 +146,6 @@ async def drivetask(drive_params, leds_params):
     # Init the rover
     init_rover(LED_BRIGHT)
 
-    leds_params.active = True
     asyncio.create_task(flash_all_leds_async(3, 0.5, LED_GREEN))
     await asyncio.sleep(2.5)
     print('Init done')
