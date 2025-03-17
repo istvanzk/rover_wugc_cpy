@@ -4,7 +4,7 @@
 #
 # Copyright 2025 Istvan Z. Kovacs. All Rights Reserved.
 #
-# Version: 1.1.0
+# Version: 1.1.1
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ from drivefunc import seq_all_leds_async, flash_all_leds_async, set_rlfb_led_asy
 # The wireless USB Game Controller library
 from pihutwugc import PiHutWUSBGameController
 
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 
 # Debug mode
 DEBUG_MODE = True

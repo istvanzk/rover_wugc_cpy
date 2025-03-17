@@ -3,7 +3,7 @@
 #
 # Copyright 2025 Istvan Z. Kovacs. All Rights Reserved.
 #
-# Version: 1.0.0
+# Version: 1.0.2
 #
 # For maximum backwards compatibility with the original rover.py implementation provided by 4tronix, 
 # almost all the function definitions in this class are kept identical.

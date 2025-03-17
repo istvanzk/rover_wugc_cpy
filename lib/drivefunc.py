@@ -4,7 +4,7 @@
 #
 # Copyright 2025 Istvan Z. Kovacs. All Rights Reserved.
 #
-# Version: 1.0.0
+# Version: 1.0.6
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ try:
 except:
     raise RuntimeError("M.A.R.S. Rover CircuitPython library is not available! Please make sure it is in the /lib folder.")
 
-VERSION = "1.0.5"
+VERSION = "1.0.6"
 
 # Use the async version of the LEDs functions
 # The *_async functions are to be used in async tasks (not implemented in this module)
