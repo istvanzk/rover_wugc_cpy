@@ -146,40 +146,35 @@ async def drivetask(drive_params, leds_params):
     # Init the rover
     init_rover(LED_BRIGHT)
 
-    #leds_params.startup = True
+    leds_params.active = True
     asyncio.create_task(flash_all_leds_async(3, 0.5, LED_GREEN))
     await asyncio.sleep(2.5)
+    print('Init done')
 
     # Control loop
     while drive_params.active:
-        # LEDs indicators
-        #leds_params.stop  = False
-        #leds_params.brake = False
-        leds_params.dir   = 0
-        leds_params.speed = 0
-
         if drive_params.stop:
             # Stop rover movement
             stop_rover()
             print('Drive: stop')
             asyncio.create_task(seq_all_leds_async(3, 0.3, LED_RED))
-            #leds_params.stop = True
             await asyncio.sleep(4.0)
         elif drive_params.brake:
             # Brake rover movement
             brake_rover()
             print('Drive: brake')
             asyncio.create_task(seq_all_leds_async(2, 0.2, LED_RED))
-            #leds_params.brake = True
             await asyncio.sleep(2.0)
         else:
             # Drive the rover
-            leds_params.dir, leds_params.speed = drive_rover(
+            _dir, _speed = drive_rover(
                 yaw = 0.0, 
                 throttle = drive_params.ly, 
                 l_r = drive_params.rx, 
                 f_b = drive_params.ry)
-            asyncio.create_task(set_rlfb_led_async(leds_params.speed>0, leds_params.dir))
+            #asyncio.create_task(set_rlfb_led_async(_speed, _dir)) # DOES NOT WORK CORRECTLY!
+            asyncio.create_task(set_rlfb_led_async(0, 0.0))
+            await asyncio.sleep(0.1)
 
         await asyncio.sleep(0)
 
@@ -201,7 +196,6 @@ async def masttask(mast_params, leds_params):
 
     # End/exit
     reset_mast()
-    leds_params.active = False
 
 async def othertask(other_params, leds_params):
     """ The async task for other actions using the received commands/parameters. """
@@ -211,32 +205,31 @@ async def othertask(other_params, leds_params):
         await asyncio.sleep(0.2)
 
     # End/exit
-    leds_params.active = False
 
 async def ledstask(leds_params):
     """ The async task for LEDs control using the received parameters. """
 
     while leds_params.active:
         if leds_params.startup:
-            asyncio.run(flash_all_leds_async(3, 0.5, LED_GREEN))
+            #asyncio.create_task(flash_all_leds_async(3, 0.5, LED_GREEN))
             leds_params.startup = False
             print('LEDS startup')
             await asyncio.sleep(0)
 
         elif leds_params.stop:
-            asyncio.run(seq_all_leds_async(3, 0.3, LED_RED))
+            #asyncio.create_task(seq_all_leds_async(3, 0.3, LED_RED))
             leds_params.stop = False
             print('LEDS stop')
             await asyncio.sleep(0)
 
         elif leds_params.brake:
-            asyncio.run(seq_all_leds_async(2, 0.2, LED_RED))
+            #asyncio.create_task(seq_all_leds_async(2, 0.2, LED_RED))
             leds_params.brake = False
             print('LEDS brake')
             await asyncio.sleep(0)
 
         else:
-            asyncio.run(set_rlfb_led_async(leds_params.speed>0, leds_params.dir))
+            #asyncio.create_task(set_rlfb_led_async(leds_params.speed>0, leds_params.dir))
             await asyncio.sleep(0)
 
     # End/exit

@@ -696,6 +696,13 @@ class RoverClass:
             if ID >= 0 and ID < self.LED_numPixels:
                 self.LED_Device[ID] = color
 
+    def showPixel(self, ID: int, color: tuple) -> None:
+        """ Set & show specified LED pixel index (ID) to specified color. """
+        if self.LED_Device:
+            if ID >= 0 and ID < self.LED_numPixels:
+                self.LED_Device[ID] = color
+                self.LED_Device.show()
+
     def show(self):
         """ Show the current LED pixels. """
         if self.LED_Device:

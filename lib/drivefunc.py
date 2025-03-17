@@ -47,8 +47,8 @@ ROVER_DoL = 80.0/77.0
 ROVER_WhR = 45.0/2.0
 
 # The direction filter
-DIR_FILTER_LNG = 3
-dir_filter = [0.0,0.0,0.0]
+DIR_FILTER_LNG = 5
+dir_filter:list = [0.0]
 rover_speed = 0
 rover_dir = 0
 prev_dir = 0
@@ -108,6 +108,10 @@ def init_rover(led_brightness: float = 0) -> None:
         else:
             # No LEDs used
             rover.init()
+
+        # Reset the mast position
+        reset_mast()
+
     except:
         rover = None
         raise RuntimeError("The custom rover functions could not be initialized!")
@@ -332,11 +336,10 @@ def flash_all_leds(
     if rover.LED_Device is None:
         return
     for _ in range(fnum):
-        rover.clear()
-        sleep(dly)
         rover.setColor(col)
+        sleep(dly)
+        rover.clear()
         sleep(dly)          
-    rover.clear()
 
 async def flash_all_leds_async(
     fnum: int = 3, 
@@ -363,7 +366,6 @@ async def flash_all_leds_async(
         await asyncio.sleep(dly)          
         rover.clear()
         await asyncio.sleep(dly)
-    rover.clear()
 
 
 def seq_all_leds(
@@ -389,11 +391,9 @@ def seq_all_leds(
     rover.clear()
     for _ in range(fnum):
         for _l in range(rover.LED_numPixels):
-            rover.clear()
-            rover.setPixel(_l, col)
-            rover.show()
+            rover.showPixel(_l, col)
             sleep(dly)
-    rover.clear()
+            rover.clear()
 
 async def seq_all_leds_async(
     fnum: int = 3, 
@@ -418,11 +418,10 @@ async def seq_all_leds_async(
     rover.clear()
     for _ in range(fnum):
         for _l in range(rover.LED_numPixels):
-            rover.clear()
-            rover.setPixel(_l, col)
-            rover.show()
+            rover.showPixel(_l, col)
             await asyncio.sleep(dly)
-    rover.clear()
+            rover.clear()
+
 
 def flash_led(
     led: int = 0,
@@ -451,11 +450,9 @@ def flash_led(
     if rover.LED_Device is None:
         return
     for _ in range(fnum):
-        rover.setPixel(led, col1)
-        rover.show()
+        rover.showPixel(led, col1)
         sleep(dly)
-        rover.setPixel(led, col2)
-        rover.show()
+        rover.showPixel(led, col2)
         sleep(dly)
     rover.clear()
 
@@ -486,11 +483,9 @@ async def flash_led_async(
     if rover.LED_Device is None:
         return
     for _ in range(fnum):
-        rover.setPixel(led, col1)
-        rover.show()
+        rover.showPixel(led, col1)
         await asyncio.sleep(dly)
-        rover.setPixel(led, col2)
-        rover.show()
+        rover.showPixel(led, col2)
         await asyncio.sleep(dly)
     rover.clear()
 
@@ -511,29 +506,30 @@ def set_rlfb_led(
         return
     if rover.LED_Device is None:
         return
+    
+    # Set all LEDs
+    rover.setPixel(1, LED_WHITE_H)
+    rover.setPixel(2, LED_WHITE_H)
+    rover.setPixel(0, LED_RED_H)
+    rover.setPixel(3, LED_RED_H)
+    rover.show()
+
     if fwd:
-        # Set all LEDs
+        # Set forward LEDs
         rover.setPixel(1, LED_WHITE)
         rover.setPixel(2, LED_WHITE)
-        rover.setPixel(0, LED_RED_H)
-        rover.setPixel(3, LED_RED_H)
-        rover.show()
 
         # Blink forward-right LED
         if dir_deg > 0:  # right
             flash_led(2, 2, 0.5, LED_RED, LED_BLACK)
-            rover.setPixel(2, LED_WHITE)
-            rover.show()
+            rover.showPixel(2, LED_WHITE)
         # Blink forward-left LED
         elif dir_deg < 0:  # left
             flash_led(1, 2, 0.5, LED_RED, LED_BLACK)
-            rover.setPixel(1, LED_WHITE)
-            rover.show()
+            rover.showPixel(1, LED_WHITE)
 
     else:
-        # Set all LEDs
-        rover.setPixel(1, LED_WHITE_H)
-        rover.setPixel(2, LED_WHITE_H)
+        # Set rear LEDs
         rover.setPixel(0, LED_RED)
         rover.setPixel(3, LED_RED)
         rover.show()
@@ -541,64 +537,62 @@ def set_rlfb_led(
         # Blink back-right LED
         if dir_deg > 0:  # right
             flash_led(3, 2, 0.5, LED_RED, LED_BLACK)
-            rover.setPixel(3, LED_RED)
-            rover.show()
+            rover.showPixel(3, LED_RED)
 
         # Blink back-left LED
         elif dir_deg < 0:  # left
             flash_led(0, 2, 0.5, LED_RED, LED_BLACK)
-            rover.setPixel(0, LED_RED)
-            rover.show()
+            rover.showPixel(0, LED_RED)
 
 async def set_rlfb_led_async(
-    fwd: bool = True, 
+    speed: int = 0, 
     dir_deg: float = 0.0
 ) -> None:
     """
     ASYNC Set forward-rear and left-right LEDs.
 
-    :param fwd: 
-        Movement forward (True) or reverse (False)
+    :param speed: 
+        Movement speed forward (positive) or reverse (negative)
     :param dir_deg: 
-        Movement right (>0) or straight (=0) or left (<0)
+        Movement direction right (>0) or straight (=0) or left (<0)
     """
     global rover
     if rover is None:
         return
     if rover.LED_Device is None:
         return
-    if fwd:
-        # Set all LEDs
+
+    # Set all LEDs
+    rover.setPixel(1, LED_WHITE_H)
+    rover.setPixel(2, LED_WHITE_H)
+    rover.setPixel(0, LED_RED_H)
+    rover.setPixel(3, LED_RED_H)
+    rover.show()
+
+    if speed > 0:
+        # Set forward LEDs
         rover.setPixel(1, LED_WHITE)
         rover.setPixel(2, LED_WHITE)
-        rover.setPixel(0, LED_RED_H)
-        rover.setPixel(3, LED_RED_H)
         rover.show()
 
         # Blink forward-right LED
         if dir_deg > 0:  # right
             for _ in range(2):
                 await asyncio.sleep(0.5)
-                rover.setPixel(2, LED_BLUE)
-                rover.show()
+                rover.showPixel(2, LED_BLUE)
                 await asyncio.sleep(0.5)
-                rover.setPixel(2, LED_WHITE)
-                rover.show()
+                rover.showPixel(2, LED_WHITE)
 
         # Blink forward-left LED
         elif dir_deg < 0:  # left
             for _ in range(2):
                 await asyncio.sleep(0.5)
-                rover.setPixel(1, LED_BLUE)
-                rover.show()
+                rover.showPixel(1, LED_BLUE)
                 await asyncio.sleep(0.5)
-                rover.setPixel(1, LED_WHITE)
-                rover.show()
+                rover.showPixel(1, LED_WHITE)
 
-    else:
-        # Set all LEDs
-        rover.setPixel(1, LED_WHITE_H)
-        rover.setPixel(2, LED_WHITE_H)
+    elif speed < 0:
+        # Set rear LEDs
         rover.setPixel(0, LED_RED)
         rover.setPixel(3, LED_RED)
         rover.show()
@@ -607,23 +601,18 @@ async def set_rlfb_led_async(
         if dir_deg > 0:  # right
             for _ in range(2):
                 await asyncio.sleep(0.5)
-                rover.setPixel(3, LED_BLUE)
-                rover.show()
+                rover.showPixel(3, LED_BLUE)
                 await asyncio.sleep(0.5)
-                rover.setPixel(3, LED_RED)
-                rover.show()
+                rover.showPixel(3, LED_RED)
 
         # Blink back-left LED
         elif dir_deg < 0:  # left
             for _ in range(2):
                 await asyncio.sleep(0.5)
-                rover.setPixel(0, LED_BLUE)
-                rover.show()
+                rover.showPixel(0, LED_BLUE)
                 await asyncio.sleep(0.5)
-                rover.setPixel(0, LED_RED)
-                rover.show()
+                rover.showPixel(0, LED_RED)
 
-    #await asyncio.sleep(0)
 
 
 #
