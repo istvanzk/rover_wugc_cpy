@@ -34,7 +34,7 @@ VERSION = "1.0.6"
 
 # Use the async version of the LEDs functions
 # The *_async functions are to be used in async tasks (not implemented in this module)
-USE_ASYNC = True
+USE_ASYNC = False
 
 # Steering mode
 ROVER_STEERING_MODE = getenv('ROVER_STEERING_MODE','simple') # 'simple' or 'ackermann'

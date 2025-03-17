@@ -148,7 +148,7 @@ async def drivetask(drive_params, leds_params):
 
     asyncio.create_task(flash_all_leds_async(3, 0.5, LED_GREEN))
     await asyncio.sleep(2.5)
-    print('Init done')
+    print('Async drive task init done')
 
     # Control loop
     while drive_params.active:
