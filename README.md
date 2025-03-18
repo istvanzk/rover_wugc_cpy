@@ -69,6 +69,13 @@ The [pihutwugc](./lib/pihutwugc.py) implements the API for the PiHut Wireless US
 
 The [drivefunc](./lib/drivefunc.py) implements the custom functions to drive and control the rover. It uses the `rover_cpy` API. This implementation is based on the Python code from [rover_wugc](https://github.com/istvanzk/rover_wugc).
 
+The basic implementation is not performing well due to timing issues. One possible solution is to use [cooperative multitasking with asyncio](https://learn.adafruit.com/cooperative-multitasking-in-circuitpython-with-asyncio/communicating-between-tasks). The secction below describes the experiments using this approach.
+<details>
+ <summary>Cooperative multitasking with asyncio</summary>
+ 
+ The [main_async](./main_async.py) is the implementation using [CircuitPython asyncio API](https://docs.circuitpython.org/projects/asyncio/en/latest/api.html). This script relies on the [drivefunc](./lib/drivefunc.py) in which all the LED effects/animations need to be disabled. This is achieved with the setting `USE_ASYNC = True`. The LED effects/animations are restricted in the asyncio version to enable smoother driving experience. Further improvements are definetly possible.
+</details>
+
 ### Test scripts
 
 The [servoTest](./testscripts/servoTest.py), [motorTest](./testscripts/motorTest.py) and [mastTest](./testscripts/mastTest.py) scripts provide manual tests for various [rover_cpy](./lib/rover_cpy.py) functionalities. These scripts are based on their original counterparts provided by 4tronix. The [ledTest](./testscripts/ledTest.py) and [driveTest](./testscripts/driveTest.py) scripts provide manual tests for various [drivefunc](./lib/drivefunc.py) functionalities. The [wugcTest](./testscripts/wugcTest.py) script provides manual tests for various [pihutwugc](./lib/pihutwugc.py) functionalities.
