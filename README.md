@@ -26,12 +26,12 @@ The Rover control requires the following signals from the RP2350-based board to 
 
 The corresponding interconnection diagram is available in [ChallangerRP2350-MARS](./circuit/ChallangerRP2350-MARS.pdf).
 
-|               Controls     |   I/O  | RasPi GPIO  | RP2350 GPIO (JP1/2 pin) | CircuitPython module |
+|               Controls     |   I/O  | RasPi GPIO  | RP2350 GPIO (JP1/2 pin) | CircuitPython module/driver |
 |----------------------------|-------------|-------------|--------------------|--------------------|
 |DC motors (via DRV8833)     | 4x PWM      | 12, 16, 13, 19 | 24(D6), 25(D9), 2(D10), 3(D11) | [pwmio](https://docs.circuitpython.org/en/latest/shared-bindings/pwmio/index.html) |
 |Servo motoros (via PCS9685) | I2C @ 0x40  | 2, 3        | 20 (SDA), 21 (SCL) | [busio.I2C](https://docs.circuitpython.org/en/latest/shared-bindings/busio/index.html#busio.I2C), [PCA9685](https://docs.circuitpython.org/projects/pca9685/en/stable/index.html), [motor-servo](https://docs.circuitpython.org/projects/motor/en/stable/examples.html#motor-servo-sweep) |
 |EEROM                       | I2C @ 0x50  | 2, 3        | 20 (SDA), 21 (SCL) | [I2C Bus device](https://docs.circuitpython.org/projects/busdevice/en/stable/api.html#adafruit-bus-device-i2c-device-i2c-bus-device) |
-|LED control (direct)        | 1x PWM      | 18          | 7 (D13) | [newopixel](https://docs.circuitpython.org/projects/neopixel/en/latest/) |
+|LED control (direct)        | 1x PWM      | 18          | 7 (D13) | [neopixel](https://docs.circuitpython.org/projects/neopixel/en/latest/) |
 |#23, #24, #25, #05          | 4x GPIO     | 23, 24, 25, 5 | 26 (A3), 27(A2), 28(A1), 29(A0) | [digitalio](https://docs.circuitpython.org/en/latest/shared-bindings/digitalio/index.html) |
 
 ## CircuitPython modules
