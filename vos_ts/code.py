@@ -19,6 +19,7 @@ VERSION = "1.0.5"
 
 # VT100 control sequences
 # https://docs.circuitpython.org/en/latest/shared-bindings/terminalio/index.html
+# https://github.com/jedgarpark/parsec/blob/main/2025-03-13/ansi_text_code.py
 RED_FG = "\33[31m"
 #RED_BG = "\33[41m"
 GREEN_FG = "\33[32m"
