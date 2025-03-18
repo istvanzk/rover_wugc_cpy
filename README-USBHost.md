@@ -22,7 +22,7 @@ A USB host can be instatiated on the GPIO12 (USB D+) and GPIO13 (USB D-).
 
 ### Summary
 
-The wireless USB dongle was identified in three different ways, as described in the following sections, with the summary results as in the Table below.
+The wireless USB dongle was identified in three different ways, as described in the following sections, with the summary results as in the Table below. Both Vendor & Product combinations are valid.
 
 |         | Vendor  | Product | Manuf.             | Product         |
 |---------|---------|---------|--------------------|-----------------|
