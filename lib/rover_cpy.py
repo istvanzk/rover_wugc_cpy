@@ -170,19 +170,19 @@ class RoverClass:
         self._pwmL2 = None
         self._pwmR2 = None
         try:
-            self._pwmL1 = pwmio.PWMOut(PWML1_Pin, duty_cycle=0, frequency=30) #, variable_frequency=True)
+            self._pwmL1 = pwmio.PWMOut(PWML1_Pin, duty_cycle=0, frequency=50) #, variable_frequency=True)
         except Exception as exc:
             self._clean_up_raise_with_msg(exc, "No PWM L1 output initialized! Cannot control the Rover without 4 PWMs.")
         try:
-            self._pwmL2 = pwmio.PWMOut(PWML2_Pin, duty_cycle=0, frequency=30) #, variable_frequency=True)
+            self._pwmL2 = pwmio.PWMOut(PWML2_Pin, duty_cycle=0, frequency=50) #, variable_frequency=True)
         except Exception as exc:
             self._clean_up_raise_with_msg(exc, "No PWM L2 output initialized! Cannot control the Rover without 4 PWMs.")
         try:
-            self._pwmR1 = pwmio.PWMOut(PWMR1_Pin, duty_cycle=0, frequency=30)
+            self._pwmR1 = pwmio.PWMOut(PWMR1_Pin, duty_cycle=0, frequency=50)
         except Exception as exc:
             self._clean_up_raise_with_msg(exc, "No PWM R1 output initialized! Cannot control the Rover without 4 PWMs.")
         try:
-            self._pwmR2 = pwmio.PWMOut(PWMR2_Pin, duty_cycle=0, frequency=30)
+            self._pwmR2 = pwmio.PWMOut(PWMR2_Pin, duty_cycle=0, frequency=50)
         except Exception as exc:
             self._clean_up_raise_with_msg(exc, "No PWM R2 output initialized! Cannot control the Rover without 4 PWMs.")
        
@@ -449,10 +449,10 @@ class RoverClass:
             time.sleep(0.2)
         _speed = min(speed, 100)
         _speed = max(_speed, 0)
-        self._pwmL1.duty_cycle = int(65535*_speed/100)
-        self._pwmL2.duty_cycle = 0   
-        self._pwmR1.duty_cycle = int(65535*_speed/100)
-        self._pwmR2.duty_cycle = 0  
+        self._pwmL1.duty_cycle = 25535 + int(40000*_speed/100)
+        self._pwmL2.duty_cycle = 0
+        self._pwmR1.duty_cycle = 25535 + int(40000*_speed/100)
+        self._pwmR2.duty_cycle = 0
         #self._pwmL1.frequency(max(_speed/2, 10))
         #self._pwmR1.frequency(max(_speed/2, 10))
         self._lDir = 1
@@ -473,9 +473,9 @@ class RoverClass:
         _speed = min(speed, 100)
         _speed = max(_speed, 0)
         self._pwmL1.duty_cycle = 0
-        self._pwmL2.duty_cycle = int(65535*_speed/100)  
+        self._pwmL2.duty_cycle = 25535 + int(40000*_speed/100)  
         self._pwmR1.duty_cycle = 0
-        self._pwmR2.duty_cycle = int(65535*_speed/100)  
+        self._pwmR2.duty_cycle = 25535 + int(40000*_speed/100)  
         #self._pwmL2.frequency(max(_speed/2, 10))
         #self._pwmR2.frequency(max(_speed/2, 10))
         self._lDir = -1
@@ -549,9 +549,9 @@ class RoverClass:
         _speed_L = max(_speed_L, 0)
         _speed_R = min(rightSpeed, 100)
         _speed_R = max(_speed_R, 0)
-        self._pwmL1.duty_cycle = int(65535*_speed_L/100)
+        self._pwmL1.duty_cycle = 25535 + int(40000*_speed_L/100)
         self._pwmL2.duty_cycle = 0   
-        self._pwmR1.duty_cycle = int(65535*_speed_R/100)
+        self._pwmR1.duty_cycle = 25535 + int(40000*_speed_R/100)
         self._pwmR2.duty_cycle = 0  
         #self._pwmL1.frequency(min(_speed_L+5, 20))
         #self._pwmR1.frequency(min(_speed_R+5, 20))
@@ -582,9 +582,9 @@ class RoverClass:
         _speed_R = min(rightSpeed, 100)
         _speed_R = max(_speed_R, 0)
         self._pwmL1.duty_cycle = 0
-        self._pwmL2.duty_cycle = int(65535*_speed_L/100)
+        self._pwmL2.duty_cycle = 25535 + int(40000*_speed_L/100)
         self._pwmR1.duty_cycle = 0
-        self._pwmR2.duty_cycle = int(65535*_speed_R/100)  
+        self._pwmR2.duty_cycle = 25535 + int(40000*_speed_R/100)  
         #self._pwmL2.frequency(min(_speed_L+5, 20))
         #self._pwmR2.frequency(min(_speed_R+5, 20))
         self._lDir = -1

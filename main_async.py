@@ -146,8 +146,7 @@ async def drivetask(drive_params, leds_params):
     # Init the rover
     init_rover(LED_BRIGHT)
 
-    asyncio.create_task(flash_all_leds_async(3, 0.5, LED_GREEN))
-    await asyncio.sleep(2.5)
+    await flash_all_leds_async(3, 0.5, LED_GREEN)
     print('Async drive task init done')
 
     # Control loop
@@ -156,14 +155,12 @@ async def drivetask(drive_params, leds_params):
             # Stop rover movement
             stop_rover()
             print('Drive: stop')
-            asyncio.create_task(seq_all_leds_async(3, 0.3, LED_RED))
-            await asyncio.sleep(4.0)
+            await seq_all_leds_async(3, 0.3, LED_RED)
         elif drive_params.brake:
             # Brake rover movement
             brake_rover()
             print('Drive: brake')
-            asyncio.create_task(seq_all_leds_async(2, 0.2, LED_RED))
-            await asyncio.sleep(2.0)
+            await seq_all_leds_async(2, 0.2, LED_RED)
         else:
             # Drive the rover
             _dir, _speed = drive_rover(

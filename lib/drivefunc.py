@@ -34,7 +34,7 @@ VERSION = "1.0.6"
 
 # Use the async version of the LEDs functions
 # The *_async functions are to be used in async tasks (not implemented in this module)
-USE_ASYNC = False
+USE_ASYNC = True
 
 # Steering mode
 ROVER_STEERING_MODE = getenv('ROVER_STEERING_MODE','simple') # 'simple' or 'ackermann'
@@ -157,7 +157,7 @@ def drive_rover(
         rover_dir_current = _mixer_dir(
             l_r=l_r,
             f_b=f_b,
-            max_dir=50)
+            max_dir=40)
         
         # Set rover direction and rover speed
         if rover_speed != rover_speed_current or rover_dir != rover_dir_current:
@@ -177,7 +177,7 @@ def drive_rover(
         rover_dir_current = _mixer_dir(
             l_r=l_r,
             f_b=f_b,
-            max_dir=50)
+            max_dir=40)
 
         # Set rover rover direction and rover speed
         if rover_speed != rover_speed_current or rover_dir != rover_dir_current:
@@ -664,7 +664,7 @@ def _mixer_dir(
         Fwd-back axis value, ranges from -1.0 to +1.0
     :param max_dir: 
         Maximum direction that should be returned from the mixer
-        defaults to 45 (degrees)
+        defaults to 65 (degrees)
     :return: 
         A direction value to send to the motor drivers (degrees)
     """
